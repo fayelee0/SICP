@@ -128,3 +128,20 @@ circumference
 (sqrt (+ 100 37))
 (sqrt (+ (sqrt 2) (sqrt 3)))
 (sqrt (sqrt 1000))
+
+;; Procedure as Black-box Abstractions
+
+(define sqrt-abs
+  (lambda (x)
+    (define sqrt-iter
+      (lambda (guess)
+        (if (good-enough? guess)
+            (improve guess)
+            (sqrt-iter (improve guess)))))
+    (define (improve guess)
+      (average guess (/ x guess)))
+    (define (good-enough? guess)
+      (= guess (improve guess)))
+    (sqrt-iter 1.0)))
+
+(sqrt-abs 2)
