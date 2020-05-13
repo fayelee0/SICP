@@ -60,3 +60,102 @@
 
 (integral cube 0 1 0.01)
 (integral cube 0 1 0.001)
+
+;; Using let to create local variables
+
+(define square (lambda (x) (* x x)))
+
+(define (f.v1 x y)
+
+  (define (f-helper a b)
+    (+ (* x (square a))
+       (* y b)
+       (* a b)))
+
+  (f-helper (+ 1 (* x y))
+            (- 1 y)))
+
+(define (f.v2 x y)
+  ((lambda (a b)
+     (+ (* x (square a))
+        (* y b)
+        (* a b)))
+   (+ 1 (* x y))
+   (- 1 y)))
+
+(define (f.v3 x y)
+  (let ((a (+ 1 (* x y)))
+        (b (- 1 y)))
+    (+ (* x (square a))
+       (* y b)
+       (* a b))))
+
+(= (f.v1 1 2)
+   (f.v2 1 2))
+
+(= (f.v3 1 2)
+   (f.v2 1 2))
+
+;; Procedures as General Methods
+
+(define average (lambda (x y) (/ (+ x y) 2.0)))
+
+(define close-enough? (lambda (x y) (< (abs (- x y)) 0.001)))
+
+(define (search f np pp)
+  (let ((mp (average np pp)))
+    (if (close-enough? np pp)
+        mp
+        (let ((tv (f mp)))
+          (cond ((positive? tv)
+                 (search f np mp))
+                ((negative? tv)
+                 (search f mp pp))
+                (else mp))))))
+
+(define half-interval-method
+  (lambda (f a b)
+    (let ((av (f a))
+          (bv (f b)))
+      (cond ((and (negative? av) (positive? bv)) (search f a b))
+            ((and (negative? bv) (positive? av)) (search f b a))
+            (else (error "Values are not of opposite sign" a b))))))
+
+(half-interval-method sin 2.0 4.0)
+
+(half-interval-method (lambda (x) (- (* x x x) (* 2 x) 3))
+                      1.0
+                      2.0)
+
+;; Finding fixed points of functions
+;  (= x (f x))
+;  (= x (f (f x)))
+;  ...
+
+(define tolerance 0.00001)
+
+(define (fixed-point f guess)
+
+  (define (try g)
+    (let ((next (f g)))
+      (if (close-enough? g next)
+          next
+          (try next))))
+
+  (define (close-enough? v1 v2)
+    (< (abs (- v1 v2)) tolerance))
+  
+  (try guess))
+
+(fixed-point cos 1.0)
+
+(fixed-point (lambda (y) (+ (sin y) (cos y))) 1.0)
+
+; (define (sqrt x)
+;   (fixed-point (lambda (y) (/ x y))
+;                1.0))
+
+(define (sqrt x)
+  (fixed-point (lambda (y) (average y (/ x y))) 1.0))
+
+(sqrt 2)
