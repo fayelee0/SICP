@@ -84,4 +84,45 @@
         ((= kinds-of-coins 5) 50)))
 
 (count-change 100)
-                            
+
+;; Exponentiation
+
+
+; O(n) steps
+; O(n) space
+(define (expt b n)
+  (if (= n 0)
+      1
+      (* b (expt b (- n 1)))))
+
+(define (expt- b n)
+  (expt-iter b n 1))
+
+; O(n) steps
+; O(1) space
+(define (expt-iter b counter product)
+  (if (= counter 0)
+      product
+      (expt-iter b (- counter 1) (* b product))))
+
+; O(lg n) steps
+; O(lg n) space
+(define fast-expt
+  (lambda (b n)
+    (cond ((= n 0) 1)
+          ((even? n) (square (fast-expt b (/ n 2))))
+          (else (* b (fast-expt b (- n 1)))))))
+
+(define (square x) (* x x))
+
+(define (fast-expt- b n)
+  (fast-expt-iter b n 1))
+
+(define (fast-expt-iter b n a)
+  (cond ((= n 0) a)
+        ((even? n) (fast-expt-iter (square b) (/ n 2) a))
+        (else (fast-expt-iter b (- n 1) (* a b)))))
+
+(= (fast-expt- 2 100)
+   (fast-expt 2 100))
+    
