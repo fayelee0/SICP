@@ -21,7 +21,7 @@
 (define (prime? n)
   (let ((square (lambda (x) (* x x)))
         (divides? (lambda (a b) (= (remainder b a) 0)))
-        (next (lambda (n) (if (even? n) (+ n 1) (+ n 2)))))
+        (next (lambda (n) (if (= n 2) (+ n 1) (+ n 2)))))
     (letrec ((find-divisor
               (lambda (n test-divisor)
                 (let ((square (lambda (x) (* x x))))
