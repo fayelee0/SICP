@@ -50,6 +50,7 @@ circumference
 ;; if
 ;; and
 ;; or
+;; let
 ;;
 ;; <if>
 ;; To evaluate an if expression, the interpreter starts by evaluating

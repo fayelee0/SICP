@@ -85,6 +85,7 @@
 
 (count-change 100)
 
+<<<<<<< HEAD
 ;; Exponentiation
 
 
@@ -126,3 +127,61 @@
 (= (fast-expt- 2 100)
    (fast-expt 2 100))
     
+=======
+;; Greatest Common Divisors
+
+;; O(lg n) steps
+;; O(lg n) space
+(define (gcd a b)
+  (if (= b 0)
+      a
+      (gcd b (remainder a b))))
+
+(= (gcd 206 40) 2)
+
+; divisor
+
+(define (smallest-divisor n)
+  (find-divisor n 2))
+
+; O(n^1/2) steps
+(define (find-divisor n test-divisor)
+  (let ((square (lambda (x) (* x x))))
+    (cond ((> (square test-divisor) n) n)
+          ((divides? test-divisor n) test-divisor)
+          (else (find-divisor n (+ test-divisor 1))))))
+
+(define (divides? a b)
+  (= (remainder b a) 0))
+
+(define (prime? n)
+  (= n (smallest-divisor n)))
+
+(prime? 1105)
+(prime? 1113)
+
+;; The Fermat test
+;; If n is a prime number and a is any positive integer less than n,
+;; then a raised to the n-th power is congruent to a modulo n.
+
+(define (expmod base exp m)
+  (let ((square (lambda (x) (* x x))))
+    (cond ((= exp 0) 1)
+          ((even? exp)
+           (remainder (square (expmod base (/ exp 2) m)) m))
+          (else
+           (remainder (* base (expmod base (- exp 1) m)) m)))))
+
+(define (fermat-test n)
+  (let ((try-it (lambda (a)
+                  (= (expmod a n n) a))))
+    (try-it (+ 1 (random (- n 1))))))
+
+(define (fast-prime? n times)
+  (cond ((= times 0) #t)
+        ((fermat-test n) (fast-prime? n (- times 1)))
+        (else #f)))
+
+; fault number
+(fast-prime? 1105 10)
+>>>>>>> 89e7830035d69e7d9f2eadcc534804074c25b612
