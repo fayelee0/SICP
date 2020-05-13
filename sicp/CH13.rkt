@@ -159,3 +159,83 @@
   (fixed-point (lambda (y) (average y (/ x y))) 1.0))
 
 (sqrt 2)
+
+(define average-damp
+  (lambda (f)
+    (lambda (x)
+      (average x (f x)))))
+
+((average-damp square) 10)
+
+(define sqrt.v2
+  (lambda (x)
+    (fixed-point
+     (average-damp
+      (lambda (y) (/ x y)))
+     1.0)))
+
+(sqrt.v2 2)
+
+(define cube-root
+  (lambda (x)
+    (fixed-point
+     (average-damp
+      (lambda (y) (/ x (square y))))
+     1.0)))
+
+(cube-root 3)
+
+
+;; Newton's method
+;
+;  f(x) = x - g(x) / Dg(x)
+;  Dg(x) = [g(x + dx) - g(x)] / dx
+
+(define dx 0.00001)
+
+(define (deriv g)
+  (lambda (x)
+    (/ (- (g (+ x dx)) (g x)) dx)))
+
+((deriv cube) 5)
+
+(define (newton-transform g)
+  (lambda (x)
+    (- x (/ (g x) ((deriv g) x)))))
+
+(define (newtons-method g guess)
+  (fixed-point (newton-transform g) guess))
+
+(define sqrt.v3
+  (lambda (x)
+    (newtons-method (lambda (y) (- (square y) x)) 1.0)))
+
+(sqrt.v3 2)
+
+(define (fixed-point-of-transform g transform guess)
+  (fixed-point (transform g) guess))
+
+(define sqrt.v4
+  (lambda (x)
+    (fixed-point-of-transform
+     (lambda (y) (/ x y))
+     average-damp
+     1.0)))
+
+(sqrt.v4 2)
+
+(define sqrt.v5
+  (lambda (x)
+    (fixed-point-of-transform
+     (lambda (y) (- (square y) x))
+     newton-transform
+     1.0)))
+
+(sqrt.v4 2)
+
+;; Some of the "rights and privileges" of first-class elements are:
+;; 1. They may be named by variables.
+;; 2. They may be passed as arguments to procedures.
+;; 3. They may be returned as the results of procedures.
+;; 4. They may be included in data structures.
+
